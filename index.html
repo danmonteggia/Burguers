@@ -385,7 +385,10 @@ function apiCall(params) {
   var url = APPS_SCRIPT_URL + '?' + Object.keys(params).map(function(k) {
     return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
   }).join('&');
-  return fetch(url, { redirect: 'follow' }).then(function(r) { return r.json(); });
+  return fetch(url, { 
+    redirect: 'follow',
+    mode: 'cors'
+  }).then(function(r) { return r.json(); });
 }
 
 function cargarEquipos() {
