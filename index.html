@@ -274,7 +274,7 @@ input[type=text]:focus { border-color: var(--glass-border-hi); }
   </div>
 
   <div class="step" id="step1">
-    <div class="back-link" onclick="showStep('step0');cargarEquipos();">← Cambiar equipo</div>
+    <div class="back-link" onclick="showStep('step0');cargarEquipos(true);">← Cambiar equipo</div>
     <div class="card">
       <div id="equipo-badge-1" class="equipo-badge"></div>
       <label>Tu nombre</label>
@@ -391,20 +391,33 @@ function apiCall(params) {
   }).then(function(r) { return r.json(); });
 }
 
-function cargarEquipos() {
+var equiposCache = null;
+
+function cargarEquipos(forzar) {
   var loadingEl   = document.getElementById('equipos-loading');
   var containerEl = document.getElementById('equipos-container');
+
+  if (equiposCache && !forzar) {
+    loadingEl.style.display   = 'none';
+    containerEl.style.display = 'block';
+    renderEquipos(equiposCache);
+    return;
+  }
+
   loadingEl.style.display   = 'block';
   containerEl.style.display = 'none';
+
   apiCall({ action: 'obtenerEquiposHoy' })
     .then(function(res) {
       loadingEl.style.display   = 'none';
       containerEl.style.display = 'block';
-      renderEquipos((res && res.ok && res.equipos) ? res.equipos : []);
+      equiposCache = (res && res.ok && res.equipos) ? res.equipos : [];
+      renderEquipos(equiposCache);
     })
     .catch(function() {
       loadingEl.style.display   = 'none';
       containerEl.style.display = 'block';
+      equiposCache = [];
       renderEquipos([]);
     });
 }
